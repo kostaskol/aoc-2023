@@ -1,21 +1,25 @@
 module Days
   class Base
+    def initialize(lines)
+      @lines = lines
+    end
+
     def self.solve(part, lines)
       case part.to_i
       when 1
-        p1(lines)
+        new(lines).part1
       when 2
-        p2(lines)
+        new(lines).part2
       else
         raise "Unknown part #{part}"
       end
     end
 
-    def self.p1(*)
+    def part1(*)
       raise 'Implement me'
     end
 
-    def self.p2(*)
+    def part2(*)
       raise 'Implement me'
     end
   end
