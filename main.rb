@@ -2,8 +2,12 @@
 
 require 'optparse'
 require 'date'
-require_relative 'days/d1'
+
 require_relative 'utils'
+
+Dir.glob(File.expand_path('days/*.rb', __dir__)).sort.each do |file|
+  require_relative file
+end
 
 opts = {
   part: 1,
