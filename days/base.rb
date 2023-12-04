@@ -1,4 +1,8 @@
 module Days
+  # Inherit this class and override the part1 and part2 methods,
+  # each of which solves one part of the problem.
+  # The basic state provided by this class is the @lines array,
+  # which is the input of the day's problem
   class Base
     def initialize(lines)
       @lines = lines
@@ -15,12 +19,12 @@ module Days
       end
     end
 
-    def part1(*)
-      raise 'Implement me'
+    def part1
+      raise NotImplementedError
     end
 
-    def part2(*)
-      raise 'Implement me'
+    def part2
+      raise NotImplementedError
     end
   end
 end
