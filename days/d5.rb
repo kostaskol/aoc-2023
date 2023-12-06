@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 require 'pry'
-require 'byebug'
 require_relative 'base'
 
 module Days
+  # https://adventofcode.com/2023/day/5
   class D5 < Base
     def part1
       inp = parsed_lines
@@ -25,13 +25,12 @@ module Days
             curr_val = map[:dst].begin + offset
           end
 
-          dst_map_suffix = curr_map.split('-to-').last
-          if dst_map_suffix == 'location'
+          curr_map = next_map(curr_map, inp)
+
+          if curr_map == :found
             loc = curr_val
             break
           end
-
-          curr_map = inp.keys.find { |k| k.start_with?(dst_map_suffix) }
         end
 
         loc
@@ -46,21 +45,19 @@ module Days
         (start..(start + range))
       end
 
-      curr_map = inp.keys.find { |k| k != 'seeds' && k.start_with?('seed') }
-
       seed_ranges.map do |range|
-        curr_range = [range]
+        curr_ranges = [range]
+        curr_map = inp.keys.find { |k| k != 'seeds' && k.start_with?('seed') }
 
         until curr_map.nil?
-          curr_range = mapped_to_next(curr_range, inp[curr_map])
+          # Next ranges
+          curr_ranges = mapped_to_next(curr_ranges, inp[curr_map])
+          curr_map = next_map(curr_map, inp)
 
-          dst_map_suffix = curr_map.split('-to-').last
-          if dst_map_suffix == 'location'
-            loc = curr_range.min_by(&:begin).begin
+          if curr_map == :found
+            loc = curr_ranges.min_by(&:begin).begin
             break
           end
-
-          curr_map = inp.keys.find { |k| k.start_with?(dst_map_suffix) }
         end
 
         loc
@@ -101,14 +98,20 @@ module Days
           end
 
 
-          if inp['seed'].any? { |range| range.cover?(curr_val) }
-            return i
-          end
+          return i if inp['seed'].any? { |range| range.cover?(curr_val) }
         end
       end
     end
 
     private
+
+    def next_map(curr_map, inp)
+      dst_map_suffix = curr_map.split('-to-').last
+
+      return :found if dst_map_suffix == 'location'
+
+      inp.keys.find { |k| k.start_with?(dst_map_suffix) }
+    end
 
     def parsed_lines
       curr_key = nil
