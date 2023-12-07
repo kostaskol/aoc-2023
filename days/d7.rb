@@ -68,16 +68,12 @@ module Days
 
     def score(hand)
       # For part 1, `J` acts normally
-      if hand.chars.include?('J') && @part == 2
-        count_js(hand)
-      else
-        count_normals(hand)
-      end
+      tal = hand.chars.include?('J') && @part == 2 ? altered_hand(hand) : hand.chars.tally
+
+      count_normals(tal.values)
     end
 
-    def count_normals(hand)
-      counts = hand.chars.tally.values
-
+    def count_normals(counts)
       if counts.include?(5)
         HANDS['five_of']
       elsif counts.include?(4)
@@ -95,40 +91,17 @@ module Days
       end
     end
 
-    def count_js(hand)
-      counts = hand.chars.tally.values
+    def altered_hand(hand)
+      tal = hand.chars.tally
+      return tal if hand.chars.all?('J')
 
-      case hand.chars.count('J')
-      # Both 5 Js & 4 Js leads to a 5-combination hand
-      when 5, 4
-        HANDS['five_of']
-      when 3
-        if counts.include?(2)
-          HANDS['five_of']
-        else
-          HANDS['four_of']
-        end
-      when 2
-        if counts.include?(3)
-          HANDS['five_of']
-        elsif counts.include?(2)
-          HANDS['four_of']
-        else
-          HANDS['three_of']
-        end
-      when 1
-        if counts.include?(4)
-          HANDS['five_of']
-        elsif counts.include?(3)
-          HANDS['four_of']
-        elsif counts.include?(2) && counts.count(2) == 2
-          HANDS['full_house']
-        elsif counts.include?(2)
-          HANDS['three_of']
-        else
-          HANDS['pair']
-        end
-      end
+      jokers = tal['J']
+      tal = tal.except('J')
+      high_number = tal.values.max
+
+      high_card = tal.find { |_, v| v == high_number }[0]
+      tal[high_card] += jokers
+      tal
     end
 
     def cmp_cards(card1, card2) = values[card1] <=> values[card2]
